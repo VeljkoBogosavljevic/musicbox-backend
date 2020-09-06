@@ -1,6 +1,7 @@
 package com.veljko.musicbox.service;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -12,19 +13,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
+import com.veljko.musicbox.model.AuthorizationResponseModelCacheHolder;
 import com.veljko.musicbox.spotify.SpotifyAPIEndpoints;
 
 @Service("spotifyAuthorizationService")
-public class AuthorizationService {
+public class AuthorizationServiceSpotify implements IAuthorizationService {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationServiceSpotify.class);
 	
 	private static final String AUTH_BODY_PARAMETER = "grant_type";
 	private static final String AUTH_BODY_VALUE = "client_credentials";
@@ -39,6 +43,7 @@ public class AuthorizationService {
 	@Qualifier("restTemplate")
 	private RestTemplate restTemplate;
 	
+	@Override
 	public AuthorizationResponseModel authorize () {
 		LOGGER.info("Authorizing client {} against Spotify Authorization API", spotifyClientId);
 		
@@ -52,7 +57,18 @@ public class AuthorizationService {
 		
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 		
-		return restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class).getBody();
+		ResponseEntity<AuthorizationResponseModel> response = restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
+		
+		if (response.getStatusCode().equals(HttpStatus.OK)) {
+			LOGGER.info("Authorizing client against spotify succesful. Updating cache with authorization response model");
+			AuthorizationResponseModelCacheHolder.getInstance().updateAuthorizationResponseModel(response.getBody(), LocalDateTime.now());
+		} else {
+			LOGGER.info("Authorizing client against spotify failed. HTTP Response code {} ", response.getStatusCode());
+		}
+		
+		return response.getBody();
+		
+		//return restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
 	}
 	
 	private String getBasicAuthEncoded () {

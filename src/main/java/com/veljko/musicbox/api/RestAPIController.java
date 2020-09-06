@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
-import com.veljko.musicbox.service.AuthorizationService;
+import com.veljko.musicbox.service.IAuthorizationService;
 
 @RestController
 @RequestMapping("api/v1")
@@ -26,8 +26,8 @@ public class RestAPIController {
 	private String authorizationApiKey;
 
 	@Autowired
-	@Qualifier("spotifyAuthorizationService")
-	private AuthorizationService authorizationService;
+	@Qualifier("cachedAuthorizationService")
+	private IAuthorizationService authorizationService;
 	
 	@PostMapping(value = "/authorize", headers = "api_key", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<AuthorizationResponseModel> authorize (@RequestHeader(value = "api_key") String apiKey) {
