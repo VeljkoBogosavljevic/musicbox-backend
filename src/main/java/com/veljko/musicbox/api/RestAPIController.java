@@ -38,7 +38,7 @@ public class RestAPIController {
 			return new ResponseEntity<AuthorizationResponseModel>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		return new ResponseEntity<AuthorizationResponseModel>(authorizationService.authorize(), HttpStatus.OK);
+		return new ResponseEntity<AuthorizationResponseModel>(authorizationService.authorize(), HttpStatus.OK);	
 	}
 	
 	private boolean isApiKeyValid (String apiKey) {

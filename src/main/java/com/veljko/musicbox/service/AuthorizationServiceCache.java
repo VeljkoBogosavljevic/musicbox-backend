@@ -21,7 +21,7 @@ public class AuthorizationServiceCache implements IAuthorizationService {
 	private IAuthorizationService spotifyAuthorizationService;
 
 	@Override
-	public AuthorizationResponseModel authorize() {
+	public AuthorizationResponseModel authorize () {
 		Optional<AuthorizationResponseModel> cachedAuthorizationResponseModel = AuthorizationResponseModelCacheHolder.getInstance().getCachedAuthorizationResponseModel();
 		
 		if (cachedAuthorizationResponseModel.isPresent()) {

@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
@@ -57,18 +57,21 @@ public class AuthorizationServiceSpotify implements IAuthorizationService {
 		
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 		
-		ResponseEntity<AuthorizationResponseModel> response = restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
-		
-		if (response.getStatusCode().equals(HttpStatus.OK)) {
-			LOGGER.info("Authorizing client against spotify succesful. Updating cache with authorization response model");
+		try {
+			ResponseEntity<AuthorizationResponseModel> response = restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
+			
+			LOGGER.info("Authorizing client against spotify succesful with status {}. Updating cache with authorization response model", response.getStatusCode());
 			AuthorizationResponseModelCacheHolder.getInstance().updateAuthorizationResponseModel(response.getBody(), LocalDateTime.now());
-		} else {
-			LOGGER.info("Authorizing client against spotify failed. HTTP Response code {} ", response.getStatusCode());
+			return response.getBody();
+			
+		} catch (HttpClientErrorException ex) {
+			LOGGER.error("Authorizing client against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+			throw new RuntimeException(ex);
+		} catch (Exception ex) {
+			LOGGER.error("Authorizing client against spotify failed due to general Exception. Message: {}", ex.getMessage());
+			throw ex;
 		}
 		
-		return response.getBody();
-		
-		//return restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
 	}
 	
 	private String getBasicAuthEncoded () {
