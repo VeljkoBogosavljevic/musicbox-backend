@@ -22,7 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
-import com.veljko.musicbox.model.AuthorizationResponseModelCacheHolder;
+import com.veljko.musicbox.model.cache.AuthorizationResponseModelCache;
 import com.veljko.musicbox.spotify.SpotifyAPIEndpoints;
 
 @Service("spotifyAuthorizationService")
@@ -61,7 +61,7 @@ public class AuthorizationServiceSpotify implements IAuthorizationService {
 			ResponseEntity<AuthorizationResponseModel> response = restTemplate.exchange(getAuhtorizationEndpoint(), HttpMethod.POST, requestEntity, AuthorizationResponseModel.class);
 			
 			LOGGER.info("Authorizing client against spotify succesful with status {}. Updating cache with authorization response model", response.getStatusCode());
-			AuthorizationResponseModelCacheHolder.getInstance().updateAuthorizationResponseModel(response.getBody(), LocalDateTime.now());
+			AuthorizationResponseModelCache.getInstance().updateAuthorizationResponseModel(response.getBody(), LocalDateTime.now());
 			return response.getBody();
 			
 		} catch (HttpClientErrorException ex) {
@@ -88,7 +88,7 @@ public class AuthorizationServiceSpotify implements IAuthorizationService {
 	private String getAuhtorizationEndpoint () {
 		StringBuilder builder = new StringBuilder();
 		
-		return builder.append(SpotifyAPIEndpoints.BASE_PATH)
+		return builder.append(SpotifyAPIEndpoints.AUHTORIZATION_BASE_PATH)
 						.append(SpotifyAPIEndpoints.AUTHORIZATION_ENDPOINT)
 						.toString();
 	}

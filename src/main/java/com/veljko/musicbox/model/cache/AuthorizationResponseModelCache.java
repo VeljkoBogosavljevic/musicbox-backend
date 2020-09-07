@@ -1,19 +1,21 @@
-package com.veljko.musicbox.model;
+package com.veljko.musicbox.model.cache;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public final class AuthorizationResponseModelCacheHolder {
+import com.veljko.musicbox.model.AuthorizationResponseModel;
+
+public final class AuthorizationResponseModelCache {
 	
-	private static AuthorizationResponseModelCacheHolder instance;
+	private static AuthorizationResponseModelCache instance;
 	private AuthorizationResponseModel cachedAuthorizationResponseModel;
 	private LocalDateTime updated;
 	
-	private AuthorizationResponseModelCacheHolder () {}
+	private AuthorizationResponseModelCache () {}
 	
-	public static AuthorizationResponseModelCacheHolder getInstance () {
+	public static AuthorizationResponseModelCache getInstance () {
 		if (instance == null) {
-			instance = new AuthorizationResponseModelCacheHolder();
+			instance = new AuthorizationResponseModelCache();
 		}
 		return instance;
 	}

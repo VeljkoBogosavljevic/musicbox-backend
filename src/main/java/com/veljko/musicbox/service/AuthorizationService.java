@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
-import com.veljko.musicbox.model.AuthorizationResponseModelCacheHolder;
+import com.veljko.musicbox.model.cache.AuthorizationResponseModelCache;
 
-@Service("cachedAuthorizationService")
-public class AuthorizationServiceCache implements IAuthorizationService {
+@Service("authorizationService")
+public class AuthorizationService implements IAuthorizationService {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationServiceCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationService.class);
 	
 	@Autowired
 	@Qualifier("spotifyAuthorizationService")
@@ -22,7 +22,7 @@ public class AuthorizationServiceCache implements IAuthorizationService {
 
 	@Override
 	public AuthorizationResponseModel authorize () {
-		Optional<AuthorizationResponseModel> cachedAuthorizationResponseModel = AuthorizationResponseModelCacheHolder.getInstance().getCachedAuthorizationResponseModel();
+		Optional<AuthorizationResponseModel> cachedAuthorizationResponseModel = AuthorizationResponseModelCache.getInstance().getCachedAuthorizationResponseModel();
 		
 		if (cachedAuthorizationResponseModel.isPresent()) {
 			LOGGER.info("Client authorized against cache");
