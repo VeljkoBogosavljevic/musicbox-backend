@@ -12,7 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
@@ -57,8 +57,8 @@ public class ReleasesServicesSpotify implements IReleasesService {
 			LOGGER.info("Fetching new releases against spotify succesful with status {}", response.getStatusCode());
 			return response.getBody();
 			
-		} catch (HttpClientErrorException ex) {
-			LOGGER.error("Fetching new releases against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+		} catch (RestClientException ex) {
+			LOGGER.error("Fetching new releases against spotify failed due to RestClientException. Message: {}", ex.getMessage());
 			throw new RuntimeException(ex);
 		} catch (Exception ex) {
 			LOGGER.error("Fetching new releases against spotify failed due to general Exception. Message: {}", ex.getMessage());

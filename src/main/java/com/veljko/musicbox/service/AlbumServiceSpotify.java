@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -63,8 +63,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AlbumServiceSpotify
 			LOGGER.info("Fetching album with id {} against spotify succesful with status {}", id, response.getStatusCode());
 			return response.getBody();
 			
-		} catch (HttpClientErrorException ex) {
-			LOGGER.error("Fetching album with id {} against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", id, ex.getStatusCode(), ex.getResponseBodyAsString());
+		} catch (RestClientException ex) {
+			LOGGER.error("Fetching album with id {} against spotify failed due to RestClientException. Message: {}", id, ex.getMessage());
 			throw new RuntimeException(ex);
 		} catch (Exception ex) {
 			LOGGER.error("Fetching album with id {} against spotify failed due to general Exception. Message: {}", id, ex.getMessage());
@@ -97,8 +97,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AlbumServiceSpotify
 			LOGGER.info("Fetching tracks for album with id {} against spotify succesful with status {}", id, response.getStatusCode());
 			return response.getBody();
 			
-		} catch (HttpClientErrorException ex) {
-			LOGGER.error("Fetching tracks for album with id {} against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", id, ex.getStatusCode(), ex.getResponseBodyAsString());
+		} catch (RestClientException ex) {
+			LOGGER.error("Fetching tracks for album with id {} against spotify failed due to RestClientException. Message: {}", id, ex.getMessage());
 			throw new RuntimeException(ex);
 		} catch (Exception ex) {
 			LOGGER.error("Fetching tracks for album with id {} against spotify failed due to general Exception. Message: {}", id, ex.getMessage());

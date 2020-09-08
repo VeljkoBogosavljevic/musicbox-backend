@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.veljko.musicbox.model.AuthorizationResponseModel;
@@ -64,8 +64,8 @@ public class AuthorizationServiceSpotify implements IAuthorizationService {
 			AuthorizationResponseModelCache.getInstance().updateAuthorizationResponseModel(response.getBody(), LocalDateTime.now());
 			return response.getBody();
 			
-		} catch (HttpClientErrorException ex) {
-			LOGGER.error("Authorizing client against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+		} catch (RestClientException ex) {
+			LOGGER.error("Authorizing client against spotify failed due to RestClientException. Message: {}", ex.getMessage());
 			throw new RuntimeException(ex);
 		} catch (Exception ex) {
 			LOGGER.error("Authorizing client against spotify failed due to general Exception. Message: {}", ex.getMessage());
