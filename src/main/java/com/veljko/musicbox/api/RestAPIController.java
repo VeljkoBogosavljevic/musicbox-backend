@@ -1,5 +1,6 @@
 package com.veljko.musicbox.api;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -71,8 +72,8 @@ public class RestAPIController {
 		return new ResponseEntity<ReleasesResponseModel>(releasesService.fetchNewReleases(market), HttpStatus.OK);	
 	}
 	
-	@GetMapping(value = "/albums/{id}", params = "market", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Album> album (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = true) String market) {
+	@GetMapping(value = "/albums/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Album> album (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = false) Optional<String> marketOpt) {
 		LOGGER.info("Album API endpoint");
 		
 		if (!isAlbumIdValid(albumId)) {
@@ -80,16 +81,16 @@ public class RestAPIController {
 			return new ResponseEntity<Album>(HttpStatus.BAD_REQUEST);
 		}
 		
-		if (!isMarketValid(market)) {
-			LOGGER.warn("Market {} is not valid for the Album API endpoint", market);
+		if (marketOpt.isPresent() && !isMarketValid(marketOpt.get())) {
+			LOGGER.warn("Market {} is not valid for the Album API endpoint", marketOpt.get());
 			return new ResponseEntity<Album>(HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<Album>(albumService.fetchAlbum(albumId, market), HttpStatus.OK);	
+		return new ResponseEntity<Album>(albumService.fetchAlbum(albumId, marketOpt), HttpStatus.OK);	
 	}
 	
-	@GetMapping(value = "/albums/{id}/tracks", params = "market", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TracksResponseModel> tracks (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = true) String market) {
+	@GetMapping(value = "/albums/{id}/tracks", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TracksResponseModel> tracks (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = false) Optional<String> marketOpt) {
 		LOGGER.info("Tracks API endpoint");
 		
 		if (!isAlbumIdValid(albumId)) {
@@ -97,12 +98,12 @@ public class RestAPIController {
 			return new ResponseEntity<TracksResponseModel>(HttpStatus.BAD_REQUEST);
 		}
 		
-		if (!isMarketValid(market)) {
-			LOGGER.warn("Market {} is not valid for the Tracks API endpoint", market);
+		if (marketOpt.isPresent() && !isMarketValid(marketOpt.get())) {
+			LOGGER.warn("Market {} is not valid for the Tracks API endpoint", marketOpt.get());
 			return new ResponseEntity<TracksResponseModel>(HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<TracksResponseModel>(albumService.fetchTracks(albumId, market), HttpStatus.OK);	
+		return new ResponseEntity<TracksResponseModel>(albumService.fetchTracks(albumId, marketOpt), HttpStatus.OK);	
 	}
 	
 	private boolean isApiKeyValid (String apiKey) {
