@@ -20,7 +20,7 @@ import com.veljko.musicbox.model.ReleasesResponseModel;
 import com.veljko.musicbox.spotify.SpotifyAPIEndpoints;
 
 @Service("spotifyReleasesService")
-public class ReleasesServicesSpotify {
+public class ReleasesServicesSpotify implements IReleasesService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleasesServicesSpotify.class);
 	
@@ -32,30 +32,31 @@ public class ReleasesServicesSpotify {
 	@Qualifier("authorizationService")
 	private IAuthorizationService authorizationService;
 	
+	@Override
 	public ReleasesResponseModel fetchNewReleases (String market) {
 		LOGGER.info("Fetching new release against spotify for market {}", market);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		
+		AuthorizationResponseModel authorizationResponseModel = authorizationService.authorize();
+		
+		String authorizationHeaderValue = new StringBuilder()
+													.append(authorizationResponseModel.getTokenType())
+													.append(" ")
+													.append(authorizationResponseModel.getAccessToken())
+													.toString();
+		
+		headers.set("Authorization", authorizationHeaderValue);
+		
+		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		
 		try {
-			AuthorizationResponseModel authorizationResponseModel = authorizationService.authorize();
-			
-			String authorizationHeaderValue = new StringBuilder()
-														.append(authorizationResponseModel.getTokenType())
-														.append(" ")
-														.append(authorizationResponseModel.getAccessToken())
-														.toString();
-			
-			headers.set("Authorization", authorizationHeaderValue);
-			
-			HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-			
 			ResponseEntity<ReleasesResponseModel> response = restTemplate.exchange(getNewReleasesEndpoint(), HttpMethod.GET, requestEntity, ReleasesResponseModel.class, market);
 			
 			LOGGER.info("Fetching new release against spotify succesful with status {}", response.getStatusCode());
-			
 			return response.getBody();
+			
 		} catch (HttpClientErrorException ex) {
 			LOGGER.error("Fetching new release against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
 			throw new RuntimeException(ex);

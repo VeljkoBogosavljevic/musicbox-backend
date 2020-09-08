@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.veljko.musicbox.model.AuthorizationResponseModel;
 import com.veljko.musicbox.model.ReleasesResponseModel;
 import com.veljko.musicbox.service.IAuthorizationService;
-import com.veljko.musicbox.service.ReleasesServicesSpotify;
+import com.veljko.musicbox.service.IReleasesService;
 
 @RestController
 @RequestMapping("api/v1")
@@ -37,7 +37,7 @@ public class RestAPIController {
 	
 	@Autowired
 	@Qualifier("spotifyReleasesService")
-	private ReleasesServicesSpotify releasesService;
+	private IReleasesService releasesService;
 	
 	@PostMapping(value = "/authorize", headers = "api_key", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<AuthorizationResponseModel> authorize (@RequestHeader(value = "api_key", required = true) String apiKey) {
