@@ -9,28 +9,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Albums implements Serializable {
+public class TracksResponseModel implements Serializable {
 
 	/**
 	 * Generated serialVersionUID
 	 */
-	private static final long serialVersionUID = 7044054557558265321L;
+	private static final long serialVersionUID = 7585902401372868046L;
 	
 	@JsonProperty("items")
-	private List<Album> items;
+	private List<Track> items;
 
-	public Albums() {
+	public TracksResponseModel() {
 		super();
 	}
 
 	@JsonGetter("items")
-	public List<Album> getItems() {
+	public List<Track> getItems() {
 		return items;
 	}
 
 	@JsonSetter("items")
-	public void setItems(List<Album> items) {
+	public void setItems(List<Track> items) {
 		this.items = items;
 	}
-	
+
 }
