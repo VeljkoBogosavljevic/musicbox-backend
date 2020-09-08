@@ -17,7 +17,7 @@ public class Track implements Serializable {
 	private static final long serialVersionUID = -5707459017834281471L;
 	
 	@JsonProperty("id")
-	private int id;
+	private String id;
 	
 	@JsonProperty("track_number")
 	private int trackNumber;
@@ -33,12 +33,12 @@ public class Track implements Serializable {
 	}
 
 	@JsonGetter("id")
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
 	@JsonSetter("id")
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

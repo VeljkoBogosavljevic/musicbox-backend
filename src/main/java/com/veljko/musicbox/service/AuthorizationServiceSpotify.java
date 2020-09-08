@@ -31,7 +31,7 @@ public class AuthorizationServiceSpotify implements IAuthorizationService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationServiceSpotify.class);
 	
 	private static final String AUTH_BODY_PARAMETER = "grant_type";
-	private static final String AUTH_BODY_VALUE = "client_credential";
+	private static final String AUTH_BODY_VALUE = "client_credentials";
 	private static final String BASIC_AUTH_DELIMITER = ":";
 	
 	@Value("${spotify.client_id}")

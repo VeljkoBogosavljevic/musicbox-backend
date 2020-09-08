@@ -11,14 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.veljko.musicbox.model.Album;
 import com.veljko.musicbox.model.AuthorizationResponseModel;
 import com.veljko.musicbox.model.ReleasesResponseModel;
+import com.veljko.musicbox.model.TracksResponseModel;
+import com.veljko.musicbox.service.IAlbumService;
 import com.veljko.musicbox.service.IAuthorizationService;
 import com.veljko.musicbox.service.IReleasesService;
 
@@ -38,6 +42,10 @@ public class RestAPIController {
 	@Autowired
 	@Qualifier("spotifyReleasesService")
 	private IReleasesService releasesService;
+	
+	@Autowired
+	@Qualifier("spotifyAlbumService")
+	private IAlbumService albumService;
 	
 	@PostMapping(value = "/authorize", headers = "api_key", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<AuthorizationResponseModel> authorize (@RequestHeader(value = "api_key", required = true) String apiKey) {
@@ -63,11 +71,50 @@ public class RestAPIController {
 		return new ResponseEntity<ReleasesResponseModel>(releasesService.fetchNewReleases(market), HttpStatus.OK);	
 	}
 	
+	@GetMapping(value = "/albums/{id}", params = "market", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Album> album (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = true) String market) {
+		LOGGER.info("Album API endpoint");
+		
+		if (!isAlbumIdValid(albumId)) {
+			LOGGER.warn("Album ID {} is not valid for the Album API endpoint", albumId);
+			return new ResponseEntity<Album>(HttpStatus.BAD_REQUEST);
+		}
+		
+		if (!isMarketValid(market)) {
+			LOGGER.warn("Market {} is not valid for the Album API endpoint", market);
+			return new ResponseEntity<Album>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<Album>(albumService.fetchAlbum(albumId, market), HttpStatus.OK);	
+	}
+	
+	@GetMapping(value = "/albums/{id}/tracks", params = "market", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TracksResponseModel> tracks (@PathVariable(value = "id") String albumId, @RequestParam(value = "market", required = true) String market) {
+		LOGGER.info("Tracks API endpoint");
+		
+		if (!isAlbumIdValid(albumId)) {
+			LOGGER.warn("Album ID {} is not valid for the Tracks API endpoint", albumId);
+			return new ResponseEntity<TracksResponseModel>(HttpStatus.BAD_REQUEST);
+		}
+		
+		if (!isMarketValid(market)) {
+			LOGGER.warn("Market {} is not valid for the Tracks API endpoint", market);
+			return new ResponseEntity<TracksResponseModel>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<TracksResponseModel>(albumService.fetchTracks(albumId, market), HttpStatus.OK);	
+	}
+	
 	private boolean isApiKeyValid (String apiKey) {
 		if (apiKey == null || !apiKey.equals(authorizationApiKey)) {
 			return false;
 		}
 		return true;
+	}
+	
+	private boolean isAlbumIdValid (String id) {
+		final Pattern albumIDPattern = Pattern.compile("^[a-zA-Z0-9]{22}$");	
+		return albumIDPattern.matcher(id).matches();
 	}
 	
 	private boolean isMarketValid (String market) {

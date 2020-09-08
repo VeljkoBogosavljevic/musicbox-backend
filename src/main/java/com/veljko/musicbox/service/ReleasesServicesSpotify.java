@@ -34,7 +34,7 @@ public class ReleasesServicesSpotify implements IReleasesService {
 	
 	@Override
 	public ReleasesResponseModel fetchNewReleases (String market) {
-		LOGGER.info("Fetching new release against spotify for market {}", market);
+		LOGGER.info("Fetching new releases against spotify for market {}", market);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -54,14 +54,14 @@ public class ReleasesServicesSpotify implements IReleasesService {
 		try {
 			ResponseEntity<ReleasesResponseModel> response = restTemplate.exchange(getNewReleasesEndpoint(), HttpMethod.GET, requestEntity, ReleasesResponseModel.class, market);
 			
-			LOGGER.info("Fetching new release against spotify succesful with status {}", response.getStatusCode());
+			LOGGER.info("Fetching new releases against spotify succesful with status {}", response.getStatusCode());
 			return response.getBody();
 			
 		} catch (HttpClientErrorException ex) {
-			LOGGER.error("Fetching new release against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
+			LOGGER.error("Fetching new releases against spotify failed due to HttpClientErrorException. HTTP Response code: {} Message: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
 			throw new RuntimeException(ex);
 		} catch (Exception ex) {
-			LOGGER.error("Fetching new release against spotify failed due to general Exception. Message: {}", ex.getMessage());
+			LOGGER.error("Fetching new releases against spotify failed due to general Exception. Message: {}", ex.getMessage());
 			throw ex;
 		}
 	}
