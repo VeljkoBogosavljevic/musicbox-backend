@@ -14,7 +14,7 @@ mvn spring-boot:run
 **Endpoints**
 
 - api_base_path: "api/v1",
-- api_authorize_endpoint: "value = /authorize, headers = api_key, produces = application/json",
-- api_releases_endpoint: "value = /releases, params = market [required], produces = application/json",
-- api_album_endpoint: "value = /albums/{id}, params = market [optional], produces = application/json",
-- api_tracks_endpoint: "value = /albums/{id}/tracks, params = market [optional], produces = application/json"
+  - api_authorize_endpoint: "value = /authorize, headers = api_key, produces = application/json",
+  - api_releases_endpoint: "value = /releases, params = market [required], produces = application/json",
+  - api_album_endpoint: "value = /albums/{id}, params = market [optional], produces = application/json",
+  - api_tracks_endpoint: "value = /albums/{id}/tracks, params = market [optional], produces = application/json"
