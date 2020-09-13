@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import com.veljko.musicbox.service.IReleasesService;
 
 @RestController
 @RequestMapping("api/v1")
+@CrossOrigin(maxAge = 3600)
 public class RestAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(RestAPIController.class);
@@ -69,7 +71,7 @@ public class RestAPIController {
 			return new ResponseEntity<ReleasesResponseModel>(HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<ReleasesResponseModel>(releasesService.fetchNewReleases(market), HttpStatus.OK);	
+		return new ResponseEntity<ReleasesResponseModel>(releasesService.fetchNewReleases(market), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/albums/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
